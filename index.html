@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dodaj do kalendarza - ICS Generator</title>
+</head>
+<body>
+  <h2>Dodaj do kalendarza wydarzenie suplementacji</h2>
+  <button id="downloadBtn">Pobierz plik .ics</button>
+  <p id="info"></p>
+
+  <script>
+    function generateICS() {
+      const now = new Date();
+      const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 9, 0, 0);
+      const end = new Date(start.getTime() + 30 * 60 * 1000);
+
+      function formatDate(d) {
+        return d.toISOString().replace(/[-:]|\.\d{3}/g, '');
+      }
+
+      const icsContent = `
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Simple ICS Generator//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+DTSTART:${formatDate(start)}
+DTEND:${formatDate(end)}
+RRULE:FREQ=DAILY;COUNT=30
+SUMMARY:Pamiętaj o suplementacji!
+DESCRIPTION:Pamiętaj o suplementacji!
+END:VEVENT
+END:VCALENDAR`.trim();
+
+      return icsContent;
+    }
+
+    document.getElementById('downloadBtn').addEventListener('click', () => {
+      const ics = generateICS();
+      const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'suplementacja.ics';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+      URL.revokeObjectURL(url);
+      document.getElementById('info').textContent = 'Plik został pobrany, otwórz go, aby dodać wydarzenie do kalendarza.';
+    });
+  </script>
+</body>
+</html>
