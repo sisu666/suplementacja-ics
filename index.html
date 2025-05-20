@@ -2,22 +2,18 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8" />
-  <title>Dodaj do kalendarza</title>
+  <title>Automatyczne pobieranie ICS</title>
 </head>
 <body>
-  <h2>Tworzenie i pobieranie pliku ICS...</h2>
   <script>
-    // Funkcja formatująca datę w formacie ICS YYYYMMDDTHHmmssZ
     function formatDateICS(date) {
       return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
     }
 
-    // Ustawienia wydarzenia
     const now = new Date();
     const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 9, 0, 0);
-    const end = new Date(start.getTime() + 30 * 60 * 1000); // 30 minut później
+    const end = new Date(start.getTime() + 30 * 60 * 1000);
 
-    // Tworzymy treść ICS
     const icsContent = `BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Custom Generator//PL
@@ -32,19 +28,18 @@ LOCATION:
 END:VEVENT
 END:VCALENDAR`;
 
-    // Tworzymy Blob z treścią ICS
     const blob = new Blob([icsContent], { type: 'text/calendar' });
     const url = URL.createObjectURL(blob);
 
-    // Tworzymy ukryty link i klikamy go, aby wywołać pobranie
     const link = document.createElement('a');
     link.href = url;
     link.download = 'suplementacja.ics';
+
+    // Dodajemy do DOM, klikamy i usuwamy link
     document.body.appendChild(link);
     link.click();
-
-    // Po pobraniu usuwamy element i zwalniamy URL
     document.body.removeChild(link);
+
     URL.revokeObjectURL(url);
   </script>
 </body>
